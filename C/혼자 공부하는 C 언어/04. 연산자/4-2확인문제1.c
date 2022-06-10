@@ -3,15 +3,33 @@
 
 #include <stdio.h>
 
+// [2022.06.10]: 한 번 틀렸어요, 관계 연산식 사용이 서툴렀어요
+
+/* 
+
+(a > b)의 경우는 참이면 1 출력, 거짓이면 0 출력
+
+(a > b) ? "안녕하세요" : "해온이에요" 의 경우는 피연산자1이 참이면 피연산자2 출력, 거짓이면 피연산자3 출력
+    더불어 피연산자1은 참, 거짓을 판단해야 하므로 관계 연산자 또는 논리 연산자 사용하세요
+
+*/
+
+
 int main(void)
 {
     int res;    // 결과 변수
 
-    res = ( sizeof(short) > sizeof(long) ) ? 1 : 0;
+    res = sizeof(short) > sizeof(long);
+    // 내 답안: res = ( sizeof(short) > sizeof(long) ) ? 1 : 0;
+    // 틀린 이유: 굳이 뒤에 안 붙여도 괜찮아요
+
     // sizeof의 피연산자로 자료형의 이름을 사용하여 크기를 바이트 단위로 계산한다
     // short형의 크기가 long형보다 크면 참이므로 1, 그렇지 않으면 0을 res에 저장한다
 
-    printf("%s\n", ((res = 0) ? "short" : "long"));
+    printf("%s\n", ((res == 1) ? "short" : "long"));
+    // 내 답안: printf("%s\n", ((res = 1) ? "short" : "long"));
+    // 틀린 이유: 첫 번째 피연산자는 관계 연산자를 사용해서 써야 하므로, ==을 사용해야지!
+    
     
     return 0;
 }
