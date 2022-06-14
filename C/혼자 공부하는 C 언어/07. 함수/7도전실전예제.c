@@ -21,7 +21,7 @@ int main(void)
 
 int rec_func(int n)
 {
-    int tot = 0;
+    int tot = 0; 
     tot += rec_func(n-1);
     if (n == 0) return ((tot + n));
     
