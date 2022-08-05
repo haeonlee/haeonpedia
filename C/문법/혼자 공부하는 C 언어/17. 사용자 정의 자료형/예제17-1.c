@@ -69,7 +69,7 @@
 
 */
 
-#include <stido.h>
+#include <stdio.h>
 
 struct student          // 구조체 선언
 {
