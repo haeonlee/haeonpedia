@@ -36,3 +36,10 @@
         ab          텍스트 파일의 끝에 추가하기 위해 개방
 
 */
+
+#include <stdio.h>
+
+int main(void)
+{
+    
+}
