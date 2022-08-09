@@ -1,2 +1,8 @@
-17
-Hong GD
+dog
+tiger
+horse
+monkey
+lion
+koala
+giraffe
+owl
