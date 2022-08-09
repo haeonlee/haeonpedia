@@ -31,7 +31,7 @@ int main(void)
  
      while(fscanf(bfp, "%s", word) != EOF)
      {
-           if(!check_registration(reg_word, word, cnt))
+           if(!check_registration(reg_word, word, cnt)) // !(변수) -> 변수를 반대로 뒤집음
            {
                 fprintf(cfp, "%s\n", word);
            }
