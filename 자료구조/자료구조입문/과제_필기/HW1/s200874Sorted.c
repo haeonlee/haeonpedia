@@ -4,12 +4,14 @@ int s200874Sorted(int A[], int n);
 
 int main(void)
 {
-    int A1[5] = { 1, 2, 2, 4, 5 };
-    int A2[5] = { 1, 2, 4, 3, 3 };
+    int A1[5] = { 1, 2, 2, 4, 5 };  // non-decreasing order
+    int A2[5] = { 1, 2, 4, 3, 3 };  // non-decreasing order가 아님
 
-    int num = s200874Sorted(A2, 5);
+    int num1 = s200874Sorted(A1, 5);
+    int num2 = s200874Sorted(A2, 5);
 
-    printf("반환 값: %d\n", temp);
+    printf("A1의 반환 값: %d\n", num1);
+    printf("A2의 반환 값: %d\n", num2);
 
     return 0;
 }
@@ -18,24 +20,20 @@ int s200874Sorted(int A[], int n)
 {
     if (n > 1)
     {
-        printf("%d >= %d\n", A[n-1], A[n-2]);
-        if ( A[n-1] >= A[n-2] ) // 뒤부터 비교
+        if ( A[n-1] >= A[n-2] )     // 뒤부터 비교
         {
-            n = n-1;            // n을 하나 줄여서, 재귀 호출할 준비
-            printf("다음에 계산할 n은 : %d\n", n);
-            s200874Sorted(A, n);
+            n = n-1;                // n을 하나 줄여서, 재귀 호출할 준비
+            return s200874Sorted(A, n);    // 재귀 호출
         }
 
         else
         {
-            printf("줄어드는 정렬입니다.\n");
-            return 0;
+            return 0;               // non-decreasing order가 아님: 0 반환
         }
     }
 
     else
     {
-        printf("줄어들지 않는 정렬입니다.\n");
-        return 1;
+        return 1;                   // non-decreasing order임: 1 반환
     }
 }
