@@ -4,10 +4,6 @@ extern int allocSizeMax;  // max allocated mem size among those of all tests
 
 void readPolyAB(int* pnA, polyPtr* pA, int* pnB, polyPtr* pB) {
 
-	
-
-
-
 	// 배열 A와 B의 입력을 나눠서 하도록 하겠습니다.
 
 	// 1. 배열 A 데이터 처리: nA 입력, MALLOC, 다항식 읽기 등
@@ -231,7 +227,7 @@ void addPoly(int nA, polyPtr A, int nB, polyPtr B, int nD, polyPtr D) {
 				coef_temp = A[sA].coef + B[sB].coef
                 if (coef_temp) // 얘네가 더 했을 때 0이 아니어야 attach를 함
 					D[i].coef = A[sA].coef + B[sB].coef
-                    D[i].expon = B[sA].expon
+                    D[i].expon = A[sA].expon
 					i++;
                     sA++;
                     sB++;
