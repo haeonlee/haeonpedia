@@ -15,8 +15,23 @@ void addq(int r, int c) {
     // 0. 큐 header front와 rear는 global 변수이다.
     // 1. FIFO에서 (r, c) 위치에 enqueue
     // 2. allocSize와 allocSizeMax를 수정
-    // 
+    
     // 이 함수를 완성하세요.
+
+    queuePtr tmp;
+
+    MALLOC(tmp, queuePtr, sizeof(queue));
+
+    tmp->row = r;
+    tmp->col = c;
+    tmp->p = NULL;
+
+    if (front)
+        rear->p = tmp;
+    else
+        front = tmp;
+    
+    rear = tmp;
 
     return;
 }
@@ -33,7 +48,7 @@ void deleteq(int* r, int* c) {
         printf("Check if the queue is empty before call.\n");
         exit(EXIT_FAILURE);
     }
-    *r = tmp->row;
+    *r = tmp->row;      // delete된 r과 c를 pointer 이용해서 r, c 변수에 저장했다는 소리
     *c = tmp->col;
 
     front = tmp->p;
@@ -73,10 +88,58 @@ char** readMaze(int *Rm, int *Cm) {
     //      destination = maze 우하 빈칸이다.
     //      따라서, destination position은 항상 dR = Rm - 2, dC = Cm - 2로 세팅한다.
 
-    char** maze = NULL; // 초기화는 편의상 넣은 것임(코드를 넣으면 불필요)
+    // 이 함수를 완성하세요.
 
-    // 이 함수를 작성하세요
+    char** maze = NULL;
 
+    // 1. 미로 크기를 나타내는 width C와 height R을 scanf()를 사용하여 입력받습니다.
+
+    int C, R;           // width(C)와 height(R)를 입력할 변수 선언
+
+    scanf("%d", &C);    // width(C) 입력
+    scanf("%d", &R);    // height(R) 입력
+
+    // 2. 실제 maze의 크기를 뜻하는 Cm, Rm의 값을 계산하여, pointer를 통해 초기화합니다.
+
+    *Cm = (2 * C) + 1;
+    *Rm = (2 * R) + 1;
+
+    // 3. 시작점(전역변수 sR, sC)과 도착점(전역변수 dR, dC)의 값을 초기화합니다.
+
+    sC = 1;
+    sR = 1;
+
+    dC = (*Cm) - 2;
+    dR = (*Rm) - 2;
+
+    // 4. maze 배열을 row 개수 = Rm, column 개수는 = Cm + 2로 allocate합니다.
+    //    allocSize와 allocSizeMax를 이 작업 중에 갱신합니다.
+
+    char** maze;
+
+    MALLOC(maze, char**, (*Rm) * sizeof(char*));
+    allocSize += (*Rm) * sizeof(char*);
+
+    for (int r = 0; r < (*Rm); r++) {
+        MALLOC(maze[r], char*, ((*Cm) + 2 ) * sizeof(char)); 
+        allocSize += ( (*Cm) + 2 ) * sizeof(char);
+    }
+
+    allocSizeMax = MAX2(allocSizeMax, allocSize);
+
+    // 5. 크기가 최소 2 이상인('\n'과 '\0' 저장용) 버퍼를 static으로 선언하고, fgets를 이 버퍼를 사용해 호출합니다.
+    //    이 버퍼는 input size에 무관하므로 allocSize에 포함하지 않습니다. 
+
+    static char temp_buffer[2];
+
+    fgets(temp_buffer, 2, stdin);
+
+    // 6. fgets(buffer, max_size, FILE)로 미로 데이터를 읽는 작업을 합니다.
+
+    for (int r = 0; r < (*Rm); r++) {
+        fgets(maze[r], ((*Cm) + 2), stdin);
+    }
+    
     return maze;
 }
 
@@ -123,9 +186,110 @@ int findShortest(char **maze, int **mark, int Rm, int Cm) {
     // 7. 이제 배열 maze에 경로가 '*'로 표시되었다. return distance;
     //
 
+    // 이 함수를 작성하세요
+
     int distance = 0;
 
-    // 이 함수를 작성하세요
- 
+    // 1. wave propagation 단계
+
+    // (1) 탐색에 앞서 필요한 준비사항을 하는 과정입니다.
+    
+    bool found = false;
+    
+    front = NULL;           // Queue는 empty한 상태
+    addq(sR, sC);           // Queue에 starting point를 넣습니다.
+    mark[sR][sC] = 0;       // starting point의 mark는 0입니다.
+    int r, c, rr, cc;       // 좌상우하의 순서로 미로를 탐색할 때 사용할 변수
+
+    // 좌상우하 순서로 탐색하기 위해 구조체 offsets를 선언하여, 좌상우하 순서로 정렬합니다.
+
+    typedef struct _offsets{
+        int v;
+        int h;
+    } offsets;
+
+    offsets move[4] = {
+        {0, -1}, {-1, 0}, {0, 1}, {1, 0}
+    };
+
+    // (2) wave propagation 단계를 queue(FIFO)로 구현합니다.
+
+    while (front != NULL)   // Q가 비워져 있지 않다면, 아래 사항을 반복합니다.
+    {
+        deleteq(&r, &c);    // Queue에서 row와 column을 delete
+                            // 이렇게 하면, pointer를 통해 r과 c의 값이 바뀝니다.
+                            // 즉, Queue에서 숫자를 하나씩 뺄 때마다 그 숫자를 사용할 수 있다는 말입니다.
+
+        int p = mark[r][c];
+
+        for (int d = 0; d < 4; d++)     // move 배열을 활용해 좌상우하 순서로 미로를 탐색합니다.
+        {
+            rr = r + move[d].v;
+            cc = c + move[d].h;
+
+            // 주변 셀 중 maze 값이 빈칸이고, Mark 값이 unvisted일 때
+            if ((maze[rr][cc] == ' ') && (mark[rr][cc] == UNVISITED) )
+            {
+                mark[rr][cc] == p + 1;          // mark 값을 p+1로 업데이트합니다.
+                if ((rr, cc) = (dR, dC)) {      // 만약, 과정 중 목적지에 도착하면
+                    found = true;               // found 값을 true로 바꾸고,
+                    break;                      // 반복문을 멈춥니다.
+                }
+                addq(rr, cc);               // 해당 셀을 queue에 넣습니다.
+            }
+        }
+    }
+
+    // 2. 예외 처리
+
+    // (1) Q에 여전히 뭔가 남아 있다면, deleteq를 호출하여 front가 NULL이 되도록 모두 비웁니다.
+
+    while(front!=NULL)
+    {
+        deleteq(&r, &c);
+    }
+
+    // (2) 경로가 없는 경우엔 UNVISITED를 반환합니다.
+    //     하지만, 우리의 입력은 오류가 없다고 가정하므로, 항상 경로가 있습니다.
+
+    if (found == false)
+        return(UNVISITED); 
+
+    // 3. back tracing 단계
+
+    // (1) back tracing 앞서 필요한 준비사항을 하는 과정입니다.
+
+    distance = mark[dR][dC];    // 도착점의 mark 값을 distance로 저장합니다.
+    maze[dR][dC] = 'T';         // maze에서 도착점을 'T'로 바꿉니다.
+    (r, c) = (dR, dC);          // 변수 r과 c는 도착점 T로 설정합니다.
+    int pp = distance;          // 추후에 back tracing 과정에서 사용할 변수
+
+    // (2) starting position에 도착할 때까지 back tracing 과정을 합니다.
+
+    while (1)
+    {
+        if ((r, c) = (sR, sC))  // 만약, 과정 중 시작점에 도착하면
+        {
+            maze[r][c] = 'S';   // 시작점을 'S'로 설정하고
+            break;              // loop를 종료합니다.
+        }
+
+        for (int d = 0; d < 4; d++)     // move 배열을 활용해 좌상우하 순서로 미로를 탐색합니다.
+        {
+            rr = r + move[d].v;
+            cc = c + move[d].h;
+
+            // 주변 셀 중에서 mark 값이 pp보다 1 작은 셀을 발견하면
+            if (mark[rr][cc] == pp - 1)
+            {
+                maze[rr][cc] = '*';     // 발견한 셀의 maze 값을 '*'로 변경
+                pp = pp - 1;            // pp의 값도 pp-1로 변경
+                r = rr;                 
+                c = cc;                 // r = rr, c = cc로 변경
+                break;                  // break문을 활용해 나머지 cell에 대한 조사는 skip
+            }
+        }
+    }
+
     return distance;
 }
