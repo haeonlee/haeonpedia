@@ -5,7 +5,7 @@ void spaceTo0x20(char* A);
 
 int main(void)
 {
-    char A[100] = "I LOVE\tU";
+    char A[100] = "I LOVE\tU...";
     spaceTo0x20(A);
     printf("%s", A);
 
