@@ -145,6 +145,8 @@ matrixPtr madd(matrixPtr A, matrixPtr B) {
        
         
         /* row를 기준으로 A의 값을 추출하는 방법임
+        // 얘는 for문 돌면서 순서대로 출력
+        // 그런데 나는 A와 B의 u.entry.col 값을 비교하며 A+B의 연산을 해야 됨...
         for (Atmp = Ahead->right; Atmp != Ahead; Atmp = Atmp->right)
         {
             Atmp->u.entry.row;
