@@ -23,20 +23,128 @@ matrixPtr madd(matrixPtr A, matrixPtr B) {
     int row, col, val, curRow;
     matrixPtr tmp, last, node;
 
-    // 2. matrixPtr A, B에서 main hearder node 데이터를 추출합니다.
 
-    // 이때, matrix C의 Row와 Col의 값은 A(또는 B)의 Row와 Col의 값과 동일하므로, 그대로 값을 사용합니다.
-    // 그러나 val의 값, 즉 matrix C의 전체 원소의 개수는 A와 B를 비교한 뒤에 알 수 있습니다.
-    // 따라서 여기서는 val의 값을 (A의 원소의 개수) + (B의 원소의 개수)로 초기화한 뒤,
-    // 추후에 A와 B를 비교하며 정확한 val의 값을 찾아가도록 하겠습니다.
+    // 편의상 A+B=C라고 하도록 하겠습니다.
+    // 2. matrixPtr A, B에서 C의 main hearder node 데이터를 추출합니다.
+    // 이때 저장한 nRows, nCols, nTerms의 값은 이후 matrix 형태로 C를 구현하며, 동적 할당을 할 때 사용합니다.
 
-    nRows = A->u.entry.col;
-    nCols = A->u.entry.row;
+    // (1) C의 main hearder node의 Row와 Col의 값은 A의 Row와 Col의 값과 동일하므로, 값을 그대로 사용
+    nRows = A->u.entry.row;
+    nCols = A->u.entry.col;
+
+    // (2) 그러나 val의 값, 즉 matrix C의 전체 원소의 개수는 A와 B를 비교한 뒤에 알 수 있음
+    //     따라서 여기서는 val의 값을 (A의 원소의 개수) + (B의 원소의 개수)로 초기화한 뒤,
+    //     추후에 A와 B를 비교하며 정확한 val의 값을 찾아가도록 하겠음
     nTerms = (A->u.entry.val) + (B->u.entry.val);
 
-    // 3. 입력 데이터를 이용해 전체 Matrix의 정보가 담긴 Main header node를 생성합니다.
+
+    // 3. matrixPtr A와 B에서 entry data들을 추출해, A+B 연산을 합니다.
+    // 이때, A+B 연산 값은 entryNode 구조체 배열(Carr)에 저장한 뒤, 추후에 사용할 것입니다.
+
+    // (1) entryNode 구조체 배열(Carr) 선언한 뒤,
+    //     배열 전체를 (row, col, val)=(-1, -1, -1)로 초기화
+
+    int CArrSize = (A->u.entry.val) + (B->u.entry.val);
+    entryNode CArr[CArrSize];       // A의 terms 개수 + B의 terms 개수만큼 크기를 할당
+                                    // CArr에 남는 공간이 생길 순 있지만, 프로그램상 편의를 위해 이렇게 배정
+    
+    // 주의: 쓰레기 값이 저장되는 것을 막기 위해서 CArr의 모든 값을 (-1, -1, -1)로 선언합니다.
+    // matrix에서 row와 col은 음수가 나올 수 없으므로, 음수 값인 -1이 나오면 NULL인 셈 치기 위해서입니다.
+    // val 값은 무엇이든지 상관 없으므로, 통일성을 위해 -1을 저장합니다.
+    for (i = 0; i < CArrSize; i++)
+    {
+        CArr[i].row = -1;
+        CArr[i].col = -1;
+        CArr[i].val = -1;    
+    }
+
+    // (2) A+B를 연산해 CArr[i]에 데이터로 저장하는 과정은 아래와 같습니다.
+    //     - A와 B에서 row 기준으로 entry node의 값을 받아온 뒤,
+    //     - A와 B의 row와 col 값을 비교하며 A+B 연산을 합니다.
+    //     - 그렇게 추출한 값(row, col, val)을 Carr[i]에 저장합니다.
+
+    matrixPtr Atmp, Btmp;
+    matrixPtr Ahead = A->right;
+    matrixPtr Bhead = B->right;
+    
+    Atmp = Ahead->right;
+    Btmp = Bhead->right;
+
+    #define COMPARE(x, y) \
+    (((x)<(y)) ? -1 : ((x) == (y)) ? 0 : 1)
+
+    int i = 0;              // CArr에 데이터를 저장할 때 사용할 index
+
+    for (int r = 0; r < (A->u.entry.row); r++)  // row 기준으로 데이터 입력
+    {
+        // while 루프
+        // 종료 조건: A, B 중에서 하나라도 해당 row에서의 노드를 모두 소진하고 다시 head로 돌아온다면 종료  
+        while ((Atmp != Ahead) && (Btmp !=Bhead) )
+        {
+            switch(COMPARE(Atmp->u.entry.col, Btmp->u.entry.col))
+            {
+                case -1:    // Atmp의 col 값 < Btmp의 col 값
+                    CArr[i].row = Atmp->u.entry.row;
+                    CArr[i].col = Atmp->u.entry.col;
+                    CArr[i].val = Atmp->u.entry.val;
+                    i++;
+                    Atmp = Atmp->right;     // 계산을 마쳤다면, Atmp는 다음 노드로 이동
+                    break;
+
+                case 0:     // Atmp의 col 값 = Btmp의 col 값
+                    // Atmp의 val 값 + Btmp의 val 값이 0이 아닐 때만 CArr에 저장
+                    if ((Atmp->u.entry.val)+(Btmp->u.entry.val))
+                    {
+                        CArr[i].row = Atmp->u.entry.row;
+                        CArr[i].col = Atmp->u.entry.col;
+                        CArr[i].val = Btmp->u.entry.val;
+                        i++;
+                    }
+                    Atmp = Atmp->right;     // 계산을 마쳤다면, Atmp는 다음 노드로 이동
+                    Btmp = Btmp->right;     // 계산을 마쳤다면, Btmp는 다음 노드로 이동
+                    nTerms -= 1;            // 중복 계산된 nTerms의 값을 제거합니다.
+                    break;
+
+                case 1:     // Atmp의 col 값 > Btmp의 col 값
+                    CArr[i].row = Btmp->u.entry.row;
+                    CArr[i].col = Btmp->u.entry.col;
+                    CArr[i].val = Btmp->u.entry.val;
+                    i++;
+                    Btmp = Btmp->right;     // 계산을 마쳤다면, Btmp는 다음 노드로 이동
+                    break;
+            }
+        }
+
+        // A, B 중에서 아직 노드가 남아 있을 수 있기 때문에, for문을 사용해 남은 노드를 모두 소진
+
+        for (; Atmp != Ahead; Atmp = Atmp->right)
+        {
+            CArr[i].row = Atmp->u.entry.row;
+            CArr[i].col = Atmp->u.entry.col;
+            CArr[i].val = Atmp->u.entry.val;
+            i++;
+        }
+
+        for (; Btmp != Bhead; Btmp = Btmp->right)
+        {
+            CArr[i].row = Btmp->u.entry.row;
+            CArr[i].col = Btmp->u.entry.col;
+            CArr[i].val = Btmp->u.entry.val;
+            i++;
+        }
+
+        // 해당 row에서 모든 연산이 끝났다면, 다음 row로 이동
+
+        Ahead = Ahead->u.next;     
+        Bhead = Bhead->u.next;
+    }
+    
+
+    // 4. 전체 Matrix의 정보가 담긴 Main header node를 생성합니다.
+    // 이때, nRows, nCols, nTerms의 값을 사용합니다.
+
     node = newNode();
-    alloSize += sizeof(matrixPtr);
+    allocSize += sizeof(matrixPtr);
 
     node->tag = entry;
     node->u.entry.row = nRows;
@@ -50,13 +158,15 @@ matrixPtr madd(matrixPtr A, matrixPtr B) {
         return node;
     }
 
-    // 4. head node 할당을 위한, 포인터 배열 hdnode를 동적 할당합니다. 
+
+    // 5. head node 할당을 위한, 포인터 배열 hdnode를 동적 할당합니다. 
     // 이때 할당한 메모리는 추후 free할 것이므로, allocSize 값에서는 임시적으로 넣었다가 뺄 예정입니다.
     
     MALLOC(hdnode, matrixPtr*, nHeads*sizeof(matrixPtr));
     allocSize += nHeads * sizeof(matrixPtr);    // 이때 추가된 값은, 추후에 다시 뺄 예정
 
-    // 5. head node들을 동적 할당합니다.
+
+    // 6. head node들을 동적 할당합니다.
     // 이때, head node들끼리 연결하는 부분(right, u.next)에선 임시적으로 자기 자신을 가리키게 합니다.
     // 이는 추후에 다시 제대로 연결할 예정입니다.
     
@@ -69,102 +179,17 @@ matrixPtr madd(matrixPtr A, matrixPtr B) {
         hdnode[i]->u.next = tmp;
     }
 
-    // 6. C에 데이터를 입력하는 과정을 설명하자면, 아래와 같습니다.
-    //    (1) A와 B에서 row 기준으로 entry node의 값을 받아온 뒤,
-    //        A와 B의 row와 col 값을 비교하며 A+B 연산을 합니다.
-    //        이때 중요한 것은, C의 row, col, val 값을 정확하게 정하는 것입니다.
-    //    (2) entry node들을 동적 할당하고
+    // 7. (1) entry node들을 동적 할당하고
+    //    (2) CArr 배열에서 각 entry node들의 데이터를 받아옵니다.
     //    (3) row/col 기준으로 각각 연결합니다.
-
-
-    // (1) A와 B에서 row 기준으로 entry node의 값을 받아온 뒤,
-    //     A와 B의 row와 col 값을 비교하며 A+B 연산을 합니다.
-    //     이때 중요한 것은, C의 row, col, val 값을 정확하게 정하는 것입니다.
-
-    matrixPtr Atmp, Btmp;
-    matrixPtr Ahead = A->right;
-    matrixPtr Bhead = B->right;
-
-    for (int r = 0; r < (A->u.entry.row); r++)
-    {
-        // while()
-        {
-            // 이때 비교를 하면 됨
-            // 먼저 row의 값은 같은 상황
-            // -> 만약 A나 B 중에서 다시 해당 row에서 쓸 걸 다 쓴 상황이면... 더는 연산할 필요가 없긴 함
-            // 아래 추출 방법을 A, B 동시에 해야 함... how to? row는 같으니까, col 값으로 비교를 조져...
-            // col이 누가 큰지 따라서 어떻게 할건지 하고...
-            // 그리고 col이 같으면, A+B 연산
-            // 걍 비교하면서 동적할당도 하고;;; 연결도 하고 그래야됨
-        }
-
-        /* 다항식에서 A+B 하는ㄴ 방법
-
-         while ( sA < nA && sB < nB )
-	    {
-            switch(COMPARE(A[sA].expon, B[sB].expon)) {
-                case -1: // a의 지수 < b의 지수
-                    D[i].coef = B[sB].coef
-                    D[i].expon = B[sB].expon
-                    i++;
-                    sB++;
-                    break;
-
-            case 0: // a의 지수 = b의 지수
-				coef_temp = A[sA].coef + B[sB].coef
-                if (coef_temp) // 얘네가 더 했을 때 0이 아니어야 attach를 함
-					D[i].coef = A[sA].coef + B[sB].coef
-                    D[i].expon = A[sA].expon
-					i++;
-                    sA++;
-                    sB++;
-                    break;
-                
-            case 1: // a의 지수 > b의 지수
-                D[i].coef = A[sA].coef
-				D[i].expon = A[sA].expon
-				i++;
-                sA++;
-                break;
-        }
-
-        while 루프를 돌며 A(x)나 B(x) 중 항 수가 작은 항이 먼저 소진될 것입니다.
-            그럼 항 수가 아직 남아 있는 항이 있을 수 있겠죠, 그런 항을 위해 for문을 사용합니다.
-
-            for (; sA <= nA; sA++)
-                D[i].coef = A[sA].coef
-                D[i].expon = A[sA].expon
-                i++;
-            for (; sB <= nB; sB++)
-                D[i].coef = B[sB].coef
-                D[i].expon = B[sB].expon
-                i++;
-	        */
-
-
-       
-        
-        /* row를 기준으로 A의 값을 추출하는 방법임
-        // 얘는 for문 돌면서 순서대로 출력
-        // 그런데 나는 A와 B의 u.entry.col 값을 비교하며 A+B의 연산을 해야 됨...
-        for (Atmp = Ahead->right; Atmp != Ahead; Atmp = Atmp->right)
-        {
-            Atmp->u.entry.row;
-            Atmp->u.entry.col;
-            Atmp->u.entry.val;
-        }
-        */
-
-    }
-
-    // (2) entry node들을 동적 할당하고
-    // (3) row/col 기준으로 각각 연결합니다.
 
     curRow = 0;             // row 기준으로 연결하기 위해 선언한 변수 curRow
     last = hdnode[0];       // row 기준으로 연결하기 위해 선언한 변수 last
 
     for (i = 0; i < nTerms; i++) {
-        scanf("%d %d %d", &row, &col, &val);
+        row = CArr[i].row;
+        col = CArr[i].col;
+        val = CArr[i].val;
 
         // 만약 새로 입력된 데이터가 curRow(즉, 이전까지 입력 받았던 데이터들의 Row)보다 크다면,
         // 당연히 아래 row로 넘어가야 할 것입니다.
@@ -197,7 +222,7 @@ matrixPtr madd(matrixPtr A, matrixPtr B) {
 
     last->right = hdnode[curRow];           // 맨 마지막 node까지 circular하게 header node랑 연결
 
-    // 7. col 기준으로 연결 2
+    // 8. col 기준으로 연결 2
     // 위에서 말한 임시적(temporal)인 setting을 제대로 수정하는 작업입니다.
 
     for (i=0; i<nCols; i++)
@@ -206,7 +231,7 @@ matrixPtr madd(matrixPtr A, matrixPtr B) {
                                             // 즉, 각 col의 마지막 노드를 circular하게 header node랑 연결
     }
 
-    // 8. hdnode[]끼리 연결
+    // 9. hdnode[]끼리 연결
     
     // (1) hdnode끼리 연결
     for (i=0; i < nHeads - 1; i++)
@@ -216,12 +241,10 @@ matrixPtr madd(matrixPtr A, matrixPtr B) {
 
     // (2) 맨 마지막 노드는 main header node랑 연결
 
-    hdnode[nHeads-1]->u.text = node;
+    hdnode[nHeads-1]->u.next = node;
 
     // (3) main header nodes는 hdnode[0]랑 연결
     node->right = hdnode[0];
-
-
 
     //------------------------------------------------------
     //testSMatrix_mid(node, hdnode); // 필요시 코멘트를 지워 자신이 만든 구조를
@@ -266,6 +289,8 @@ void mwriteFull(matrixPtr node) {
     //------------------------------------------------------
     // 이 함수를 완성하세요. 
 
+    int oldRow, oldCol, newRow, newCol;
+    int printRow, printCol;
 
 
     //------------------------------------------------------
@@ -303,7 +328,7 @@ matrixPtr mread(void) {
 
     // 3. 입력 데이터를 이용해 전체 Matrix의 정보가 담긴 Main header node를 생성합니다.
     node = newNode();
-    alloSize += sizeof(matrixPtr);
+    allocSize += sizeof(matrixPtr);
 
     node->tag = entry;
     node->u.entry.row = nRows;
@@ -396,7 +421,7 @@ matrixPtr mread(void) {
 
     // (2) 맨 마지막 노드는 main header node랑 연결
 
-    hdnode[nHeads-1]->u.text = node;
+    hdnode[nHeads-1]->u.next = node;
 
     // (3) main header nodes는 hdnode[0]랑 연결
     node->right = hdnode[0];
