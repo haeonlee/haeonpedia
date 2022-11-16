@@ -289,13 +289,93 @@ void mwriteFull(matrixPtr node) {
     //------------------------------------------------------
     // 이 함수를 완성하세요. 
 
-    int oldRow, oldCol, newRow, newCol;
-    int printRow, printCol;
+    // 0. [ Row X Col ] 형태로 printf() 합니다.
 
+    printf("[%d X %d]\n", node->u.entry.row, node->u.entry.col);
+
+    // 1. writeFull을 위해 필요한 변수들을 선언합니다.
+
+    matrixPtr tmp;
+    matrixPtr head = node->right;
+
+    int oldRow, oldCol;             // 이전에 입력된 노드의 데이터를 의미
+    int newRow, newCol, newVal;     // 새롭게 입력된 노드의 데이터를 의미
+    int pDataNum;                   // printDataNum으로 현재까지 출력한 data의 개수
+    int repeatZero;                 // 반복 횟수 (즉, Node 사이의 간격)
+
+    // 2. writeFull 과정을 실행합니다.
+    // NOTE: writeFull 과정은 '데이터로 입력된 node 사이의 거리'와 '현재까지 출력한 data의 개수'만 알면 간단합니다.
+
+    // - "데이터로 입력된 node 사이의 거리"가 필요한 이유
+    //   가령, matrixPtr node를 통해 (0, 0, 1)과 (0, 4, 2) 데이터가 입력됐다고 가정합시다.
+    //   writeFull 함수 데이터는 [1 0 0 0 2] 로 위 데이터를 출력해야 할 것입니다.
+    //   node 사이의 간격은 3인데, 3번을 반복하여 0이 출력됐다는 것을 알 수 있습니다.
+    //   즉, 0을 출력하기 위해 node 사이의 거리가 필요한 것입니다.
+    //   저는 이러한 node 사이의 거리를 repeatZero에 넣어서 0을 반복 출력하는 for문을 작성할 것입니다.
+
+    // - 현재까지 출력한 data의 개수
+    //   그러나 위 형태로 출력 불가한 경우가 있습니다. (0, 2, 2)와 (1, 1, 3) 데이터처럼 row가 달라진 경우이지요.
+    //   그럴 땐 출력하고 있는 위치가 row의 마지막 node일 땐, 줄바꿈 문자(\n)를 입력해야 합니다.
+    //   이를 판단하기 위해서는 print를 할 때마다 pDataNum(초기값 0)을 1씩 증가하여,
+    //   현재까지 출력한 data의 개수를 파악하면 됩니다.
+    //   이후, (node->u.entry.col)을 pDataNum로 나누어서 나머지가 없을 때, 줄바꿈을 하면 됩니다.
+    //   예를 들어 col의 개수가 3이라면, pDataNum이 3, 6, 9, ... 일 때마다 줄바꿈이 필요하기 때문입니다.
+
+    // (1) 변수를 적절한 값으로 초기화합니다.
+
+    oldRow = 0, oldCol = 0;       // 초기 입력 노드를 의미하는 oldRow와 oldCol은 (0, 0)으로 선언합니다.
+    pDataNum = 0;                 // 현재 print하는 점 위치를 의미하는 pRow와 pCol도 
+
+    // (2) row를 기준으로 값을 받아오면서, writeFull을 시작합니다.
+
+    for (int i = 0; i < node->u.entry.row; i++ )
+    {
+        for ( tmp = head->right; tmp != head; tmp = tmp->right; )
+        {
+            newRow = tmp->u.entry.row;
+            newCol = tmp->u.entry.col;
+            newVal = tmp->u.entry.val;
+
+            // 0을 출력할 반복 횟수를 계산
+            repeatZero = (oldRow - newRow)* (node->u.entry.col) + (newCol - oldCol) - 1;
+
+            // for 반복문으로 repeat: 0을 출력
+            for (int j = 0; j < repeatZero; j++)
+            {
+                if (((node->u.entry.col)%pDataNum) == 0)
+                {
+                    printf("%5d\n", 0);
+                    pDataNum += 1;
+                }
+                else
+                {
+                    printf("%5d ", 0);
+                    pDataNum += 1;
+                }
+            }
+
+            // NewVal를 printf로 출력합니다.
+            if (((node->u.entry.col)%pDataNum) == 0)
+            {
+                printf("%5d\n", newVal);
+                pDataNum += 1;
+            }
+            else
+            {
+                printf("%5d ", newVal);
+                pDataNum += 1;
+            }      
+
+            // new data를 old data로 바꾸고, 새로운 데이터를 받아올 생각을 합니다.
+            oldRow = newRow;
+            oldCol = newCol;
+        }
+
+        // 다음 row로 넘어갑니다.
+        head = head->u.next;
+    }
 
     //------------------------------------------------------
-
-
     return;
 }
 
@@ -448,7 +528,48 @@ void merase(matrixPtr* node){
     // 이 함수를 완성하세요. 
     // allocSize 값을 정확히 줄여 0이 되어야 합니다.
 
+    // 1. H0의 정보를 head에 입력합니다.
+    matrixPtr head = (*node)->right;
 
+    // 2. 필요한 변수를 선언합니다.
+    matrixPtr x, y;
+
+    // 3. row를 기준으로 free()합니다.
+    // 이때, allocSize 값을 정확히 줄여야 합니다.
+
+    for (int i = 0; i < (*node)->u.entry.row; i++)
+    {
+        y = head->right;
+        while ( y != head )
+        {
+            x = y;              // 지울 node를 x에 저장
+            y = y->right;       // y는 다음 node를 지시
+            free(x);            // free(x)로 동적 메모리 할당 해제
+            allocSize -= sizeof(matrixNode);
+        }
+        x = head;               // x는 해당 row의 head를 지시
+        head = head->u.next;    // head는 다음 head로 이동
+        free(x);                // 해당 row의 head까지 삭제
+        allocSize -= sizeof(matrixNode);
+    }
+
+    // 4. 혹시 남은 head node가 있다면(row의 개수 < col의 개수), 지워줍니다.
+    // 쉽게 말해, 아직 col 기준으론 Head node가 남아 있는 경우를 말합니다.
+
+    y = head;
+    while ( y != *node )
+    {
+        x = y;
+        y = y->u.next;
+        free(x);
+        allocSize -= sizeof(matrixNode);
+    }
+
+    // 5. 마지막으로, main head node까지 삭제합니다.
+
+    free(*node);
+    allocSize -= sizeof(matrixNode);
+    *node = NULL;
 
     //------------------------------------------------------
     return;
