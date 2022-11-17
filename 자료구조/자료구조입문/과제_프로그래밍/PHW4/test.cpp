@@ -1,8 +1,8 @@
 #include <stdio.h>
 
 int main(void) {
-    int T;
-    scanf("%d", &T);    // read # of test cases
-    printf("%d", T);
+    int T, A, P;
+    scanf("%d %d %d", &T, &A, &P);    // read # of test cases
+    printf("%d %d %d", T, A, P);
     return 0;
 }
