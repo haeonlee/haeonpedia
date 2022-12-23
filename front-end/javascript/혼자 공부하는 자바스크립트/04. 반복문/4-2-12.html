@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script>
+        // continue 키워드 활용(2)
+
+        let output = 0;
+
+        // 반복문
+        for (let i = 1; i <= 10; i++) {
+            // 조건문
+            if ( i % 2 === 1 ) {
+                // 홀수면 현재 반복을 중지하고 다음 반복을 수행합니다.
+                continue;
+            }
+            output += i;
+        }
+
+        // 출력합니다.
+        alert(output);
+
+        // 짝수의 합만 계산되어서 출력됨
+        // 홀수를 만나면 output += i; 을 수행하기 전에 바로 다음 반복 작업으로 넘어가기 때문에
+
+    </script>
+</head>
+<body>
+</body>
+</html>

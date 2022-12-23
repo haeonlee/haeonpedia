@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script>
+        // 중첩 반복문 사용하기(2)
+
+        let output = '';
+
+        // 중첩 반복문
+        // 코드 리뷰: 반복문 쓸 때 let 키워드 꼭 쓰세요
+        for (i=0; i<14; i++) {      
+            for (j=0; j<28; j++) {
+                if ((j >= 14-i) && (j <= 14+i)) {
+                    output += '*';
+                } else {
+                    output += ' ';
+                }
+            }
+            output += '\n';
+        }
+
+        // 출력합니다
+        console.log(output);
+    </script>
+</head>
+<body>
+</body>
+</html>
