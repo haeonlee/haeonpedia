@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script>
+        // 3. 사용자로부터 숫자를 입력 받아 cm를 inch 단위로 변환하여 출력하는 프로그램을 만들어 보세요.
+        // 1cm는 0.393701inch로 변환할 수 있습니다.
+
+        // 숫자를 입력 받습니다
+        const inputCm = prompt('cm 단위의 숫자를 입력해 주세요', '입력>');
+
+        // 입력을 숫자로 변경하고 inch 단위로 변경합니다.
+        Number(inputCm);
+        const inchRatio = 0.393701;
+        const inch = inputCm * inchRatio;
+
+        // 출력합니다
+        alert(`${inputCm}cm는 ${inch}inch입니다.`);
+    </script>
+</head>
+<body>
+</body>
+</html>
