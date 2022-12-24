@@ -1,0 +1,35 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>출력결과</title>
+    </head>
+    <body>
+        <script>
+            function solution(s){
+                let answer="";
+                for (const i of s) {
+                    if (i === "A") { answer += "#"}
+                    else { answer += i }
+                }
+                
+                return answer;
+            }
+
+            /* 답지
+
+            function solution(s){
+                let answer="";
+                for(let x of s){
+                    if(x=='A') answer+='#';
+                    else answer+=x;
+                }
+                return answer;
+            }
+
+            */
+            
+            let str="BANANA";
+            console.log(solution(str));
+        </script>
+    </body>
+</html>

@@ -1,0 +1,34 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>출력결과</title>
+    </head>
+    <body>
+        <script>
+            function solution(s){
+                let answer=s;
+
+                for (let i = 0; i < s.length; i++) {
+                    if (s[i] === "A") answer=answer.replace('A', '#');
+                }
+                // code review: for문, if문 빼고
+                // answer=answer.replace('A', '#')만 남겨도 괜찮음
+                
+                return answer;
+            }
+
+            /* 답지
+
+            function solution(s){
+                let answer=s;
+                answer=answer.replace(/A/g, "#");
+                return answer;
+            }
+
+            */
+            
+            let str="BANANA";
+            console.log(solution(str));
+        </script>
+    </body>
+</html>

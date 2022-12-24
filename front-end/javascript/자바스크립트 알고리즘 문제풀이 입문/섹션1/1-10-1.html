@@ -1,0 +1,33 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>출력결과</title>
+    </head>
+    <body>
+        <script>
+            function solution(s, t){
+                let answer=0;
+                for (let i=0; i<s.length; i++) {
+                    if (s[i] === t) answer += 1;
+                    // code review: answer += 1 로 쓰지 말고 answer++; 로 쓰면 더 예쁠 것 같음
+                }
+                return answer;
+            }
+
+            /* 답지
+
+            function solution(s, t){
+                let answer=0;
+                for(let x of s){
+                    if(x===t) answer++;
+                }
+                return answer;
+            }
+
+            */
+            
+            let str="COMPUTERPROGRAMMING";
+            console.log(solution(str, 'R'));
+        </script>
+    </body>
+</html>

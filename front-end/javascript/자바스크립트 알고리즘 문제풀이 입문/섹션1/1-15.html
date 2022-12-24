@@ -1,0 +1,43 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>출력결과</title>
+    </head>
+    <body>
+        <script>
+            function solution(s){  
+                let answer = "";
+                let num = 0;
+
+                if (s.length % 2 === 0) {
+                    num = s.length / 2;
+                    answer += s[num-1];
+                    answer += s[num];
+
+                } else {
+                    num = Math.floor(s.length/2);
+                    answer += s[num];
+                }
+                
+                return answer;
+            }
+
+            /* 답지
+
+            function solution(s){  
+                let answer;
+                let mid=Math.floor(s.length/2)
+                if(s.length%2===1) answer=s.substring(mid, mid+1);
+                else answer=s.substring(mid-1, mid+1);
+                //if(s.length%2===1) answer=s.substr(mid, 1);
+                //else answer=s.substr(mid-1, 2);
+                return answer;
+            }
+
+            */
+
+            console.log(solution("study"));
+            console.log(solution("good"));
+        </script>
+    </body>
+</html>

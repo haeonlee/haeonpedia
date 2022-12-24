@@ -1,0 +1,43 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>출력결과</title>
+    </head>
+    <body>
+        <script>
+            function solution(arr){         
+                let answer, min=Number.MAX_SAFE_INTEGER;
+                // 찾아본 것:
+                // Number.MAX_SAFE_INTEGER 상수는 Javascript에서 안전한 최대 정수 값을 나타냅니다.
+
+                answer=arr[0];
+                for (const num of arr) {
+                    if (num < answer) answer = num;
+                }
+                
+                // 내장 함수 Math.min()
+                // (1) 요소들을 바로 넣기: Math.min(1, 2, 3, 4, 5);
+                // (2) 배열을 넣을 땐 전개 연산자로 넣기: Math.min(...arr);
+                
+                return answer;
+            }
+
+            /* 답지
+
+            function solution(arr){         
+                let answer, min=Number.MAX_SAFE_INTEGER;
+                for(let i=1; i<arr.length; i++){
+                    if(arr[i]<min) min=arr[i];
+                }
+                answer=min;
+                return answer;
+
+            }
+
+            */
+
+            let arr=[5, 3, 7, 11, 2, 15, 17];
+            console.log(solution(arr));
+        </script>
+    </body>
+</html>
