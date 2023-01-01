@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script>
+        // this 키워드의 차이
+
+        // 변수를 선언합니다.
+        const test = {
+            a: function () {
+                console.log(this);
+            },
+            b: () => {
+                console.log(this);
+            }
+        }
+
+        // 메소드를 호출합니다.
+        test.a();
+        test.b();
+    </script>
+</head>
+<body>
+</body>
+</html>
