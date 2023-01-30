@@ -5,14 +5,81 @@
     </head>
     <body>
         <script>
+            // 졸업 선물
             function solution(m, product){
                 let answer=0;
-                
+                let n=product.length;   // 학생 수 n
+
+                // 브루투포스 방식은 아닌 것 같았지만, 일단 문제를 풀고 싶었으므로 방법을 구상했다.
+                // 
+
+                // 1. 합계가 낮은 순서로 누적해서 계산하기
+                // - 합계 가격을 만들 배열을 sumarr 선언하기
+                // - 작은 값부터 min()으로 뽑아서 예산에서 제거하기 (if min < m 일 때까지)
+                // - 이때, 계산한 상품은 sumarr 데이터에서 삭제하는데, index는 변하면 안 되므로 safe integer max 값으로 대체한다.
+                // * 원래는 undefined을 사용하려고 했는데, 얘를 쓰면 Min 검색이 안 됩니다.
+
+                // 2. 상품은 남았는데 예산 부족인 상황이라면
+                // - 50% 가격 계산한 뒤, 다시 narr에 저장해서 min 값 도출
+
+                let sumarr = product.map((value) => value[0] + value[1]);
+                let min = Math.min(...sumarr);
+
+                while (min <= m) {
+                    m -= min;
+                    answer++;
+                    sumarr[sumarr.indexOf(min)] = Number.MAX_SAFE_INTEGER;
+                    min = Math.min(...sumarr);
+                }
+
+                for (let i = 0; i < n; i++) {
+                    if(sumarr[i] !== Number.MAX_SAFE_INTEGER) {
+                        sumarr[i] = arr[i][0]*0.5 + arr[i][1];
+                    }
+                }
+
+                min = Math.min(...sumarr);
+
+                while (min <= m) {
+                    m -= min;
+                    answer++;
+                    sumarr[sumarr.indexOf(min)] = Number.MAX_SAFE_INTEGER;
+                    min = Math.min(...sumarr);
+                }
+
+                return answer;
+            }
+
+            /* 답지
+
+            - 핵심은 완전탐색(브루투포스)로 문제를 해석해야 한다는 것이다:
+              강사님께서 어떤 상품을 할인하는 것이 좋은지에 대해서는 정답이 없다고 하셨다.
+              최대한 많은 수의 상품을 사야 되기 때문이다.
+              이때, 이 문제를 브루투포스로 풀면 된다는 힌트를 얻을 수 있는 대목이 있는데(내 생각ㅋㅋ)
+              바로 "상품을 하나를 50% 할인해서 살 수 있다"는 점이다.
+              3개의 상품이 있다면, n번 상품을 할인 받았을 때로 범위를 나눠서 완전탐색을 하면 됐던 것이다.
+            - sort() 메소드 사용: 물건 값과 배송비를 합쳐서 작은 순서대로 정렬합니다
+
+            function solution(m, product){
+                let answer=0;
+                let n=product.length;
+                product.sort((a, b)=>(a[0]+a[1])-(b[0]+b[1]));          // 먼저 작은 순서대로 정렬
                 for(let i=0; i<n; i++){
-                    
+                    let money=m-(product[i][0]/2+product[i][1]);        // 50% 할인을 먼저 적용
+                    let cnt=1;
+                    for(let j=0; j<n; j++){                             
+                        if(j!==i && (product[j][0]+product[j][1])>money) break;
+                        if(j!==i && (product[j][0]+product[j][1])<=money){
+                            money-=(product[j][0]+product[j][1]);
+                            cnt++;
+                        }
+                    }
+                    answer=Math.max(answer, cnt);
                 }  
                 return answer;
             }
+
+            */
             
             let arr=[[6, 6], [2, 2], [4, 3], [4, 5], [10, 3]];
             console.log(solution(28, arr));

@@ -7,6 +7,39 @@
         <script>
             function solution(s){
                 let answer="";
+                let num = 1;
+
+                answer += s[0];
+
+                for ( let i = 1; i < s.length; i++ ) {
+                    if ( s[i] !== s[i-1] ) {
+                        if (num !== 1) answer += num;
+                        num = 1;
+                        answer += s[i];
+                    } else {
+                        num++;
+                    }
+                }
+
+            /* 답지
+
+            function solution(s){
+                let answer="";
+                let cnt=1;
+                s=s+" ";
+                for(let i=0; i<s.length-1; i++){
+                    if(s[i]===s[i+1]) cnt++;
+                    else{
+                        answer+=s[i];
+                        if(cnt>1) answer+=String(cnt);
+                        cnt=1;
+                    }
+            }
+
+            코드 리뷰code Review:
+            코드 쓴 방법만 다르지 풀이 자체는 똑같음
+
+            */
                 
                 return answer;
             }

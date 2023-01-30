@@ -7,7 +7,47 @@
         <script>
             function solution(arr){         
                 let answer=0, cnt=0;
-                   
+
+                // 1. cnt에 1이 중복되는 수를 계산하여, 해당 회차의 점수를 계산합니다.
+                // 2. 이후에 cnt를 answer에 더해 최종 answer를 구해갑니다.
+
+                answer += arr[0];
+                cnt = arr[0];
+
+                for (let i = 1; i < arr.length; i++) {
+                    if ((arr[i] === 1) && (arr[i-1] === 1)) {
+                        cnt++;  // 연속 정답일 땐 cnt 값이 1 상승
+                    } else { 
+                        cnt = arr[i];   // 연속 정답이 아닐 땐 score 점수 그대로 cnt에 반영
+                    }
+                    answer += cnt;
+                }
+
+                /* 답지
+
+                for(let x of arr){
+                    if(x===1){
+                        cnt++;
+                        answer+=cnt;
+                    }
+                    else cnt=0;
+                }
+
+                코드 리뷰code review
+                나는 case를 (1) 연속 정답인 경우 (2) 연속 정답이 아닌 경우로 분류했다.
+
+                답지는 case를 (2) 정답인 경우 (3) 오답인 경우로 분류했다.
+                정답인 경우엔 점수가 +1이 되고, answer에 값이 누적된다.
+
+                Q. 왜 이런 차이가 발생했을까?
+                A. 나는 0점인 경우도, answer에 누적해야 하는 하나의 결과값이라고 생각했다.
+                하지만 답지의 경우는 어차피 0점인 경우는 연산을 안 해도 되므로, 해당 값을 따로 빼지 않았다.
+                '0을 어떻게 다룰 것이냐'를 고려하는 것도 깔끔한 코드를 작성할 때 유의할 점인 듯.
+                0을 연산 안 해도 된다고 생각하면 생각보다 쉽게 문제를 풀 수도 있다.
+
+                */
+                
+                
                 return answer;
             }
 

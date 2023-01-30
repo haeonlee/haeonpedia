@@ -7,7 +7,55 @@
         <script>
             function solution(a, b){         
                 let answer="";
-                
+                for (let i = 0; i < a.length; i++) {
+
+                    let num = a[i]-b[i];
+
+                    // 1. 값을 빼서 -2, -1, 0, 1, 2의 케이스를 구분하여 계산한다.
+                    // - 절댓값이 2일 땐, 작은 수가 이긴 것
+                    // - 절댓값이 1일 땐, 큰 수가 이긴 것
+                    // - 절댓값이 0일 땐, 비긴 것
+
+                    switch(num) {
+                        case -2:
+                            answer += "A";
+                            break;
+
+                        case -1:
+                            answer += "B";
+                            break;
+
+                        case 0:
+                            answer += "D";
+                            break;
+
+                        case 1:
+                            answer += "A";
+                            break;
+                        
+                        case 2:
+                            answer += "B";
+                            break;
+                    }
+                }
+
+                /* 답지
+
+                code review:
+                답지 코드가 더 코드가 짧고 직관적이다.
+                비기는 경우를 먼저 if문으로 빼고,
+                A가 이기는 경우를 모두 else if문으로 분류해 조건문 처리한 다음에,
+                B가 이기는 경우를 else로 구분했다. (어차피 A 아니면 B가 이긴 것이니까.)
+
+                for(let i=0; i<a.length; i++){
+                    if(a[i]===b[i]) answer+="D ";
+                    else if(a[i]===1 && b[i]===3) answer+="A ";
+                    else if(a[i]===2 && b[i]===1) answer+="A ";
+                    else if(a[i]===3 && b[i]===2) answer+="A ";
+                    else answer+="B ";
+                }
+
+                */
                 
                 return answer;
             }

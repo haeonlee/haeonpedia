@@ -7,12 +7,54 @@
         <script>
             function solution(s){
                 let answer="YES";
+                let ns = "";        // 알파벳만 추출해 저장하는 ns
+                let rs = "";        // ns의 역문자열
+
+                // 1. for문을 돌려 공백이나 숫자 등을 제외하고 알파벳만 담아 새로운 문자열에 넣습니다.
+                // 2. 전체를 toLowerCase(); 로 만들어 소문자로 변환합니다
+                // 3. split('').reverse().join('') 형태를 이용하여 팰린드롬 형태를 구분합니다.
+
+                // 구글에 검색해서 testeng 하는 방법을 찾음
+                let testeng = /[a-zA-Z]/;
+
+                for (let i = 0; i < s.length; i++) {
+                    if ( testeng.test(String(s[i])) ) {     // 영어일 때 삽입
+                        ns += String(s[i]);
+                    }
+                }
+
+                ns = ns.toLowerCase();
+                rs = ns.split('').reverse().join('');
+
+                if ( ns !== rs ) {
+                    answer="NO";
+                }
                 
                 return answer;
             }
+
+            /* 답지
+
+            function solution(s){
+                let answer="YES";
+                s=s.toLowerCase().replace(/[^a-z]/g, '');
+                // replace(/[^a-z]/g, '')는 [소문자 a-z]가 아닌(^) 것들을 ''로 대체하라는 뜻이다
+
+                if(s.split('').reverse().join('')!==s) return "NO";
+                return answer;
+            }
+
+            코드 리뷰code review:
+            딱 답지 열어서 코드 보자마자 음메 기죽어 상태가 됐다
+            결과만 제대로 나오면 뭐 하냐고 4줄로 쓸 수 있는 코드를 14줄에 쓰고 있는데...
+            정규식을 잘 외워 놓아서 잘 써먹어 보자.
+
+            */
             
             let str="found7, time: study; Yduts; emit, 7Dnuof";
             console.log(solution(str));
+            let str2="found7, time: study; test; emit, 7Dnuof";
+            console.log(solution(str2));
         </script>
     </body>
 </html>

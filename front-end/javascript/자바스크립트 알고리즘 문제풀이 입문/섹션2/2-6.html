@@ -5,14 +5,91 @@
     </head>
     <body>
         <script>
+            // 격자판 최대합 문제
+            // 답은 맞게 나왔지만, 비효율적이고 지저분한 코드였다.
+
+            function solution(arr){  
+                let answer=Number.MIN_SAFE_INTEGER;
+                let n=arr.length;
+                let max=sum=0;              // 합을 저장할 변수와 최댓값을 저장할 변수를 선언
+
+                // 1. 행, 열, 대각선 기준으로 합을 하며 max 값을 계속 갱신합니다.
+                // 2. 최종 max 값을 answer에 저장합니다.
+
+                // (1) 행 기준으로 Max 값 갱신
+                for (let i = 0; i < n; i++) {
+                    for(let j = 0; j < n; j++) {
+                        sum += arr[i][j];
+                    }
+                    if (sum > max) max = sum;
+                    sum = 0;
+                }
+
+                // (2) 열 기준으로 Max 값 갱신
+                for (let j = 0; j < n; j++) {
+                    for(let i = 0; i < n; i++) {
+                        sum += arr[i][j];
+                    }
+                    if (sum > max) max = sum;
+                    sum = 0;
+                }
+
+                // (3) 정방향 대각선 기준으로 Max 값 갱신
+                for (let i = 0; i < n; i++) {
+                    sum += arr[i][i];
+                }
+
+                if (sum > max) max = sum;
+                sum = 0;
+
+                // (4) 역방향 대각선 기준으로 Max 값 갱신
+
+                for (let i = 0; i < n; i++) {
+                    sum += arr[i][n-i];             // 오류: arr[i][n-1-i];
+                }
+
+                if (sum > max) max = sum;
+
+                answer=max; 
+                return answer;
+            }
+
+            /* 답지
+
             function solution(arr){  
                 let answer=Number.MIN_SAFE_INTEGER;
                 let n=arr.length;
                 let sum1=sum2=0;
-                
+                for(let i=0; i<n; i++){
+                    sum1=sum2=0;
+                    for(let j=0; j<n; j++){
+                        sum1+=arr[i][j];
+                        sum2+=arr[j][i];
+                    }
+                    answer=Math.max(answer, sum1, sum2);
+                }
+                sum1=sum2=0;
+                for(let i=0; i<n; i++){
+                    sum1+=arr[i][i];
+                    sum2+=arr[i][n-1-i];
+                }  
                 answer=Math.max(answer, sum1, sum2); 
                 return answer;
             }
+
+            코드 리뷰code review:
+
+            코드에서 배우고 싶은 부분
+            1. for문 하나를 이용해서 arr[i][j]와 arr[j][i]를 동시에 계산했다.
+            2. max 값을 따로 빼서 변수 처리 하지 않고, answer에 누적 갱신했다.
+
+            내가 틀리게 생각한 것
+            1. arr[i][n-i]가 아니고 arr[i][n-1-i]이다.
+            (n은 인덱스 개념이 아니므로, 인덱스 개념으로 치환하면 n-1이 된다.)
+            
+            교훈: 인간의 두뇌로 빠른 방법을 생각하지 말고, 컴퓨터가 할 수 있는 최적의 방법을 생각해 보자.
+
+            */
 
             let arr=[[10, 13, 10, 12, 15], 
                      [12, 39, 30, 23, 11],

@@ -1,0 +1,43 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>출력결과</title>
+    </head>
+    <body>
+        <script>
+            function solution(arr){         
+                let answer=1, max=arr[0];
+                for (const i of arr) {
+                    if (i > max) {
+                        answer++;
+                        max = i;
+                    }
+                }
+
+                /* 답지
+
+                code review:
+                나는 const i of arr 형식으로 for문을 작성했는데 (배열의 객체를 참조 가능)
+                답지는 for문의 기본 형식을 사용해서 작성했다.
+                어떤 방식을 사용하는 것이 더 좋을까?
+                -> 구글링으로 찾아보았지만, 뭐가 특별히 더 좋다는 건 없는 것 같다.
+                일단은 해야 할 것들이 많으니까 일단은 넘어가면서 나만의 경험을 쌓아가기로.
+                내가 사용하기엔 솔직히 고전적인 for문이 가장 익숙하고 편하긴 하다.
+
+                for(let i=1; i<arr.length; i++){
+                    if(arr[i]>max){
+                        answer++;
+                        max=arr[i];
+                    }
+                }
+
+                */
+
+                return answer;
+            }
+
+            let arr=[130, 135, 148, 140, 145, 150, 150, 153];
+            console.log(solution(arr));
+        </script>
+    </body>
+</html>

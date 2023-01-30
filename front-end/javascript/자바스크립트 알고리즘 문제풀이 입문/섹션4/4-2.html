@@ -1,0 +1,97 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>출력결과</title>
+    </head>
+    <body>
+        <script>
+            // 뒤집은 소수
+            // N개의 자연수가 입력되면,
+            // 각 자연수를 뒤집은 후,
+            // 뒤집은 수가 소수이면 그 소수를 출력하는 프로그램을 작성하세요.
+
+            // 소수 판별 프로그램
+            function isPrime(num){
+                if(num===1) return false;
+
+                for (let i = 2; i < num; i++) {
+                    if (num % i === 0) return false
+                }
+                
+                return true;
+            }
+
+            function solution(arr){
+                let answer=[];
+
+                // 1. 자연수를 뒤집습니다.
+                // 2. 해당 자연수가 소수인지 판별합니다.
+                // 3. 소수로 판별되면 answer에 push합니다.
+
+                for (const i of arr) {
+                    let num = i.toString().split('').reverse().join('')
+                    if ( isPrime(Number(num)) === true) {
+                        answer.push(Number(num));
+                    }
+                }
+                
+                return answer;
+            }
+
+            /* 답지
+
+            1. 소수 판별 프로그램
+            - parseInt(): 문자열을 숫자로 변환
+            - Math.sqrt(): 제곱근
+
+            function isPrime(num){
+                if(num===1) return false;
+                for(let i=2; i<=parseInt(Math.sqrt(num)); i++){
+                    if(num%i===0) return false;
+                }
+                return true;
+            }
+
+            코드 리뷰code review
+            - 왜 Math.sqrt(num), 즉 제곱근을 사용한 것인지 이해가 되지 않았다.
+            - 찾아보니까, N의 약수는 항상 sqrt 범위 안에 있으므로 약수를 판별할 때 시간을 줄일 수 있기 때문이다.
+
+
+            방법1. 수로 계산하기
+
+            function solution(arr){
+                let answer=[];
+                for(let x of arr){
+                    let res=0;
+                    while(x){
+                        let t=x%10;
+                        res=res*10+t;
+                        x=parseInt(x/10);
+                    }
+                    if(isPrime(res)) answer.push(res);
+                }
+                return answer;
+            }
+
+            방법2. 문자열로 변환해서 사용
+
+            function solution(arr){
+                let answer=[];
+                for(let x of arr){
+                    let res=Number(x.toString().split('').reverse().join(''));
+                    if(isPrime(res)) answer.push(res);
+                }
+                return answer;
+            }
+
+            코드 리뷰code review:
+            나는 방법2. 문자열로 변환해서 사용 방법으로 풀었는데,
+            방법1처럼 수학적으로 생각하는 것도 중요할 것 같다.
+
+            */
+            
+            let arr=[32, 55, 62, 20, 250, 370, 200, 30, 100];
+            console.log(solution(arr));
+        </script>
+    </body>
+</html>

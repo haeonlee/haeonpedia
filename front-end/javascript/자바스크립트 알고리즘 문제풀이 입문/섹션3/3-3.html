@@ -7,9 +7,29 @@
         <script>
             function solution(str){
                 let answer="";
-                
+                s = str.replace(/[^0-9]/g, '');
+                answer = Number(s);
+                return parseInt(answer);
+                // parseInt(): 문자열을 숫자로 바꾸는 메소드
+            }
+
+            /* 답지
+
+            function solution(str){
+                let answer="";
+                for(let x of str){
+                    if(!isNaN(x)) answer+=x;
+                }  
                 return parseInt(answer);
             }
+
+            코드 리뷰code review:
+
+            새롭게 배운 것
+            - isNaN()은 isNotaNumber로 숫자가 아니면 true, 숫자면 false를 반환한다.
+            - length 구할 필요 없이 for of 문법 써도 간단하겠구나
+
+            */
             
             let str="g0en2T0s8eSoft";
             console.log(solution(str));
